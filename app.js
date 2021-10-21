@@ -1,8 +1,7 @@
 'use strict';
 
 const express = require('express');
-// const bodyParser =  require('body-parser');
-const fs = require('fs');
+const cors = require('cors');
 const mysql = require('mysql');
 const e = require('express');
 
@@ -10,6 +9,7 @@ const PORT = process.env.PORT || 3050;
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 
@@ -28,7 +28,7 @@ connection.connect(error => {
 });
 
 // Routes
-app.get('/', (req, res )=> {
+app.get('/', (req, res)=> {
     res.send('Bienvendo a mi API!')
 });
 
@@ -86,6 +86,32 @@ app.put('/productos/:id', (req, res) => {
     connection.query(sql, error => {
         if (error) throw error;
         res.send('Producto actualizado')
+    });    
+});
+
+
+app.delete('/productos/:id', (req, res) => {
+    const {id} = req.params;
+    const sql = `DELETE FROM Productos WHERE id = ${id}`;
+
+    connection.query(sql, error => {
+        if (error) throw error;
+        res.send('Producto eliminado')
+    });   
+});
+
+
+app.get('/usuarios/validar/:correo', (req, res) => {
+    const {correo} = req.params;
+    const sql = `SELECT * FROM Usuarios WHERE correo LIKE '${correo}'`;
+
+    connection.query(sql, (error, results) => {
+        if (error) throw error;
+        if (results.length > 0){
+            res.json(results[0]);
+        } else {
+            res.send('No hay resultados');
+        }
     });    
 });
 

@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/jeissonmp15/ventas-backend#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "googleapis": "^87.0.0",
     "mysql": "^2.18.1",
