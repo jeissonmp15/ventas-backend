@@ -28,15 +28,15 @@ connection.connect(error => {
 });
 
 // Routes
-app.get('/', (req, res)=> {
+app.get('/', (req, res) => {
     res.send('Bienvendo a mi API!')
 });
 
-app.get('/productos', (req, res)=> {
+app.get('/productos', (req, res) => {
     const sql = 'SELECT * FROM Productos'
     connection.query(sql, (error, results) => {
         if (error) throw error;
-        if (results.length > 0){
+        if (results.length > 0) {
             res.json(results);
         } else {
             res.send('No hay resultados');
@@ -48,12 +48,12 @@ app.get('/productos', (req, res)=> {
     // res.send(products);
 });
 
-app.get('/productos/:id', (req, res)=> {
-    const {id} = req.params;
+app.get('/productos/:id', (req, res) => {
+    const { id } = req.params;
     const sql = `SELECT * FROM Productos WHERE id = ${id}`;
     connection.query(sql, (error, results) => {
         if (error) throw error;
-        if (results.length > 0){
+        if (results.length > 0) {
             res.json(results[0]);
         } else {
             res.send('No hay resultados');
@@ -62,59 +62,61 @@ app.get('/productos/:id', (req, res)=> {
 
 });
 
-app.post('/productos', (req, res)=> {
+app.post('/productos', (req, res) => {
     const sql = "INSERT INTO Productos SET ?";
 
-    let _object = {
-        // id: uuidv4(),
+    const _object = {
         nombre: req.body.nombre,
         precio: req.body.precio
     }
 
     connection.query(sql, _object, error => {
         if (error) throw error;
-        res.send('Producto creado')
+        connection.query('SELECT LAST_INSERT_ID();', (error, results) => {
+            if (error) throw error;
+            res.json(results[0])
+        });
     });
 
 });
 
 app.put('/productos/:id', (req, res) => {
-    const {id} = req.params;
-    const {nombre, precio} = req.body;
+    const { id } = req.params;
+    const { nombre, precio } = req.body;
     const sql = `UPDATE Productos SET nombre = '${nombre}', precio = '${precio}' WHERE id = ${id}`;
 
     connection.query(sql, error => {
         if (error) throw error;
         res.send('Producto actualizado')
-    });    
+    });
 });
 
 
 app.delete('/productos/:id', (req, res) => {
-    const {id} = req.params;
+    const { id } = req.params;
     const sql = `DELETE FROM Productos WHERE id = ${id}`;
 
     connection.query(sql, error => {
         if (error) throw error;
         res.send('Producto eliminado')
-    });   
+    });
 });
 
 
 app.get('/usuarios/validar/:correo', (req, res) => {
-    const {correo} = req.params;
+    const { correo } = req.params;
     const sql = `SELECT * FROM Usuarios WHERE correo LIKE '${correo}'`;
 
     connection.query(sql, (error, results) => {
         if (error) throw error;
-        if (results.length > 0){
+        if (results.length > 0) {
             res.json(results[0]);
         } else {
             res.send('No hay resultados');
         }
-    });    
+    });
 });
 
-app.listen(PORT, ()=> {
+app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
